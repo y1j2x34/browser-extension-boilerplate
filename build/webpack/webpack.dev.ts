@@ -1,31 +1,29 @@
-import config from './webpack.base';
 import path from 'path';
-import HtmlWebpackPlugin from 'html-webpack-plugin';
+import baseConfig from './webpack.base';
 import webpack from 'webpack';
+import webpackMerge from 'webpack-merge';
+import { IPluginOptions } from 'webpack-extension-reloader';
+const ExtensionReloader = require('webpack-extension-reloader');
+const srcDirectory = path.resolve(__dirname, '../../src');
 
-const debugDirectory = path.resolve(__dirname, '../../src/debug');
-
-config
-    .entry('index')
-    .clear()
-    .add(path.resolve(debugDirectory, 'index.ts'));
-
-config.mode('development').devtool('cheap-module-source-map');
-config.output.filename('[name].js').path(path.resolve(__dirname, '../../dist'));
-
-config.devServer
-    .port(9999)
-    .disableHostCheck(true)
-    .hot(true)
-    .allowedHosts.add('0.0.0.0')
-    .end()
-    .watchContentBase(true);
-
-config.plugin('html').use(HtmlWebpackPlugin, [
-    {
-        template: path.resolve(debugDirectory, 'index.html')
-    }
-]);
-config.plugin('hot').use(webpack.HotModuleReplacementPlugin);
-
-export default config.toConfig();
+export default webpackMerge(baseConfig, {
+    mode: 'development',
+    devtool: 'cheap-module-source-map',
+    watch: true,
+    watchOptions: {
+        ignored: ['node_modules/**']
+    },
+    plugins: [
+        new ExtensionReloader({
+            port: 9999,
+            entries: {
+                contentScript: 'content-script',
+                background: 'background',
+                options: 'options',
+                popup: 'popup'
+            },
+            reloadPage: true,
+            manifest: path.resolve(srcDirectory, 'manifest.json')
+        } as IPluginOptions)
+    ]
+} as webpack.Configuration);
