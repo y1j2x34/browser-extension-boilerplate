@@ -11,6 +11,7 @@ const projectDirectory = path.resolve(__dirname, '../..');
 
 export default {
     entry: {
+        polyfill: path.resolve(srcDirectory, 'polyfill.ts'),
         'content-script': path.resolve(srcDirectory, 'content-script/index.ts'),
         background: path.resolve(srcDirectory, 'background/index.ts'),
         options: path.resolve(srcDirectory, 'options/index.ts'),
@@ -64,12 +65,12 @@ export default {
         new HtmlWebpackPlugin({
             template: path.resolve(srcDirectory, 'options/index.html'),
             filename: 'options/index.html',
-            chunks: ['options']
+            chunks: ['polyfill', 'options']
         }),
         new HtmlWebpackPlugin({
             template: path.resolve(srcDirectory, 'popup/index.html'),
             filename: 'popup/index.html',
-            chunks: ['popup']
+            chunks: ['polyfill', 'popup']
         })
     ]
 } as webpack.Configuration;

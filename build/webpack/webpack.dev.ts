@@ -15,7 +15,7 @@ export default webpackMerge(baseConfig, {
     },
     plugins: [
         new ExtensionReloader({
-            port: 9999,
+            port: 9998,
             entries: {
                 contentScript: 'content-script',
                 background: 'background',
